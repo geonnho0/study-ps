@@ -16,16 +16,16 @@ void input() {
 }
 
 void solution() {
-    int ans = 0;
     for (int i = 0; i <= N; i++) {
-        dp[i] = max(dp[i], ans);
+        if (i != 0) {
+            dp[i] = max(dp[i], dp[i-1]);
+        }
         int endDay = i + T[i];
         if (endDay <= N) {
             dp[endDay] = max(dp[endDay], dp[i] + P[i]);
         }
-        ans = max(ans, dp[i]);
     }
-    cout << ans;
+    cout << dp[N];
 }
 
 int main() {
