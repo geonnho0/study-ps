@@ -12,13 +12,9 @@ void solution() {
     scanf("%d %d", &N, &K);
     for (int i = 1; i <= N; i++) dp[1][i] = 1;
     for (int i = 1; i <= K; i++) dp[i][0] = 1;
-    for (int k = 2; k <= K; k++) {
-        for (int n = 1; n <= N; n++) {
-            int total = 0;
-            for (int tmp = 0; tmp <= n; tmp++) {
-                total = (total + dp[k-1][n-tmp]) % 1000000000;
-            }
-            dp[k][n] = total;
+    for (int i = 2; i <= K; i++) {
+        for (int j = 1; j <= N; j++) {
+            dp[i][j] = (dp[i][j-1] + dp[i-1][j]) % 1000000000;
         }
     }
     printf("%lld", dp[K][N]);
