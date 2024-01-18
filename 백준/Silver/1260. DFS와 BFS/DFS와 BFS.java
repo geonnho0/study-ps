@@ -4,62 +4,60 @@ import java.util.Scanner;
 
 public class Main {
 
-    static boolean[][] arr;
+    static Scanner scanner = new Scanner(System.in);
+    static StringBuffer stringBuffer = new StringBuffer();
+    static int[][] edges;
     static boolean[] visited;
-    static int N;
-    static int M;
-    static int V;
+    static int N, M;
 
     public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
         N = scanner.nextInt();
         M = scanner.nextInt();
-        V = scanner.nextInt();
+        int V = scanner.nextInt();
+        edges = new int[N + 1][N + 1];
+        visited = new boolean[N + 1];
 
-        arr = new boolean[N + 1][N + 1];
-        visited = new boolean[N];
+        for (int i = 1; i <= M; i++) {
+            int a = scanner.nextInt();
+            int b = scanner.nextInt();
 
-        for (int i = 0; i < M; i++) {
-            int v = scanner.nextInt();
-            int w = scanner.nextInt();
-            arr[v][w] = true;
-            arr[w][v] = true;
+            edges[a][b] = 1;
+            edges[b][a] = 1;
         }
 
         dfs(V);
-        visited = new boolean[N];
-        System.out.println();
+        System.out.println(stringBuffer);
+        stringBuffer = new StringBuffer();
+        visited = new boolean[N + 1];
         bfs(V);
+        System.out.println(stringBuffer);
     }
 
-    public static void dfs(int n) {
-        visited[n - 1] = true;
-        System.out.printf("%d ", n);
+    static void dfs(int num) {
+        visited[num] = true;
+        stringBuffer.append(num).append(" ");
 
-        for (int i = 1; i <= visited.length; i++) {
-            if (arr[n][i] && !visited[i - 1]) {
-                dfs(i);
-            }
+        for (int i = 1; i <= N; i++) {
+            if (edges[num][i] == 0 || visited[i]) continue;
+            dfs(i);
         }
     }
 
-    public static void bfs(int n) {
+    static void bfs(int num) {
         Queue<Integer> queue = new LinkedList<>();
-        queue.offer(n);
+        queue.add(num);
 
         while (!queue.isEmpty()) {
-            int node = queue.poll();
-            if (visited[node - 1])
-                continue;
+            int curr = queue.poll();
+            if (visited[curr]) continue;
+            visited[curr] = true;
+            stringBuffer.append(curr).append(" ");
 
-            visited[node - 1] = true;
-            System.out.printf("%d ", node);
-
-            for (int i = 1; i <= visited.length; i++) {
-                if (arr[node][i] && !visited[i - 1]) {
-                    queue.offer(i);
-                }
+            for (int i = 1; i <= N; i++) {
+                if (edges[curr][i] == 0 || visited[i]) continue;
+                queue.add(i);
             }
         }
     }
+
 }
