@@ -17,8 +17,6 @@ public class Main {
                 if (strings[j].equals("1")) union(i + 1, j + 1);
         }
 
-        for (int i = 1; i <= n; i++) find(i);
-
         boolean yes = true;
         int city = scanner.nextInt();
         int root = find(city);
