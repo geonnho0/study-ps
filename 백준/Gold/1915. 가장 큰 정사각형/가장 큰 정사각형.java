@@ -7,36 +7,22 @@ public class Main {
         int n = scanner.nextInt();
         int m = scanner.nextInt();
         scanner.nextLine();
-        int[][] arr = new int[n][m];
-        for (int i = 0; i < n; i++) {
+        int[][] dp = new int[n + 1][m + 1];
+        for (int i = 1; i <= n; i++) {
             String[] strings = scanner.nextLine().split("");
             for (int j = 0; j < m; j++)
-                arr[i][j] = Integer.parseInt(strings[j]);
-        }
-
-        int[][] dp = new int[n][m];
-
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (arr[i][j] == 0) continue;
-                int left = j - 1;
-                int up = i - 1;
-                if (left < 0 || up < 0) {
-                    dp[i][j] = arr[i][j] == 1 ? 1 : 0;
-                    continue;
-                }
-                if (arr[up][left] == 1 && arr[up][j] == 1 && arr[i][left] == 1) {
-                    int min = Math.min(dp[up][left], dp[up][j]);
-                    dp[i][j] = Math.min(min, dp[i][left]) + 1;
-                }
-                else dp[i][j] = 1;
-            }
+                dp[i][j + 1] = Integer.parseInt(strings[j]);
         }
 
         int max = 0;
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < m; j++)
-                max = Math.max(dp[i][j], max);
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (dp[i][j] == 0) continue;
+                int min = Math.min(dp[i - 1][j - 1], dp[i - 1][j]);
+                dp[i][j] = Math.min(min, dp[i][j - 1]) + 1;
+                max = Math.max(max, dp[i][j]);
+            }
+        }
         System.out.println(max * max);
     }
 
