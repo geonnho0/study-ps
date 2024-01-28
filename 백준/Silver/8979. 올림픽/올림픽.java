@@ -1,5 +1,3 @@
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Scanner;
 
 public class Main {
@@ -7,42 +5,25 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
         int N = scanner.nextInt();
         int K = scanner.nextInt();
-        ArrayList<Country> countries = new ArrayList<>();
-        Country target = null;
-        for (int i = 0; i < N; i++) {
-            int countryNum = scanner.nextInt();
-            int gold = scanner.nextInt();
-            int silver = scanner.nextInt();
-            int bronze = scanner.nextInt();
-
-            countries.add(new Country(gold, silver, bronze));
-            if (countryNum == K) target = countries.get(i);
+        int[] gold = new int[N + 1];
+        int[] silver = new int[N + 1];
+        int[] bronze = new int[N + 1];
+        for (int i = 1; i <= N; i++) {
+            int country = scanner.nextInt();
+            gold[country] = scanner.nextInt();
+            silver[country] = scanner.nextInt();
+            bronze[country] = scanner.nextInt();
         }
-        Collections.sort(countries);
-        for (int i = 0; i < N; i++) {
-            if (target.equals(countries.get(i))) System.out.println(i + 1);
+        int res = 1;
+        for (int i = 1; i <= N; i++) {
+            if (gold[i] > gold[K]) res++;
+            else if (gold[i] == gold[K]) {
+                if (silver[i] > silver[K]) res++;
+                else if (silver[i] == silver[K]) {
+                    if (bronze[i] > bronze[K]) res++;
+                }
+            }
         }
-    }
-}
-
-class Country implements Comparable<Country> {
-
-    int gold;
-    int silver;
-    int bronze;
-
-    @Override
-    public int compareTo(Country o) {
-        if (this.gold > o.gold) return -1;
-        else if (this.gold == o.gold && this.silver > o.silver) return -1;
-        else if (this.gold == o.gold && this.silver == o.silver && this.bronze > o.bronze) return -1;
-        else if (this.gold == o.gold && this.silver == o.silver && this.bronze == o.bronze) return 0;
-        return 1;
-    }
-
-    public Country(int gold, int silver, int bronze) {
-        this.gold = gold;
-        this.silver = silver;
-        this.bronze = bronze;
+        System.out.println(res);
     }
 }
