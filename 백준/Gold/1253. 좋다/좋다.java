@@ -1,35 +1,42 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int N = scanner.nextInt();
-        long[] arr = new long[N];
-        int ans = 0;
 
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        st = new StringTokenizer(br.readLine(), " ");
+        long[] num = new long[N];
         for (int i = 0; i < N; i++)
-            arr[i] = scanner.nextInt();
+            num[i] = Integer.parseInt(st.nextToken());
+        Arrays.sort(num);
+        System.out.print(getAns(N, num));
+    }
 
-        Arrays.sort(arr);
+    private static int getAns(int N, long[] num) {
+        int ans = 0;
+        for (int i = 0; i < N; i++) {
+            int left = 0;
+            int right = N - 1;
 
-        for (int index = 0; index < N; index++) {
-            int i = 0;
-            int j = N - 1;
-
-            while (i < j) {
-                long sum = arr[i] + arr[j];
-                if (sum == arr[index]) {
-                    if (i != index && j != index) {
+            while (left < right) {
+                long sum = num[left] + num[right];
+                if (sum == num[i]) {
+                    if (left != i && right != i) {
                         ans++;
                         break;
-                    } else if (i == index) i++;
-                    else j--;
-                } else if (sum < arr[index]) i++;
-                else j--;
+                    }
+                    else if (left == i) left++;
+                    else right--;
+                }
+                else if (sum > num[i]) right--;
+                else left++;
             }
         }
-
-        System.out.println(ans);
+        return ans;
     }
 }
