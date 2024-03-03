@@ -1,23 +1,26 @@
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Main {
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        int T = scanner.nextInt();
-
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int T = Integer.parseInt(br.readLine());
         while (T-- > 0) {
-            int n = scanner.nextInt();
-            int m = scanner.nextInt();
-
-            long[][] dp = new long[n + 1][m + 1];
-            for (int i = 1; i <= m; i++) dp[1][i] = i;
-
-            for (int i = 2; i <= n; i++)
-                for (int j = i; j <= m; j++)
+            String[] line = br.readLine().split(" ");
+            int N = Integer.parseInt(line[0]);
+            int M = Integer.parseInt(line[1]);
+            int[][] dp = new int[N + 1][M + 1];
+            for (int i = 1; i <= M; i++) {
+                dp[1][i] = i;
+            }
+            for (int i = 2; i <= N; i++) {
+                for (int j = i; j <= M; j++) {
                     dp[i][j] = dp[i][j - 1] + dp[i - 1][j - 1];
-
-            System.out.println(dp[n][m]);
+                }
+            }
+            System.out.println(dp[N][M]);
         }
     }
 
