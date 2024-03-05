@@ -6,6 +6,7 @@ import java.util.*;
 public class Main {
 
     static List<Edge>[] graph;
+    static long[] distances;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -13,6 +14,7 @@ public class Main {
         int N = Integer.parseInt(line[0]);
         int E = Integer.parseInt(line[1]);
         graph = new ArrayList[N + 1];
+        distances = new long[N + 1];
         for (int i = 1; i <= N; i++) {
             graph[i] = new ArrayList<>();
         }
@@ -27,65 +29,42 @@ public class Main {
         getAnswer(target, N);
     }
 
-    static long[] dijkstra(int start, long dist, int N) {
+    static void dijkstra(int start, int N) {
         PriorityQueue<Edge> queue = new PriorityQueue<>();
-        long[] distances = new long[N + 1];
         for (int i = 1; i <= N; i++) {
             distances[i] = Integer.MAX_VALUE;
         }
-        boolean[] visited = new boolean[N + 1];
-        queue.offer(new Edge(start, dist));
-        distances[start] = dist;
+        queue.offer(new Edge(start, 0));
+        distances[start] = 0;
 
         while (!queue.isEmpty()) {
             Edge curr = queue.poll();
-            int end = curr.end;
-            if (visited[end]) {
-                continue;
-            }
-            visited[end] = true;
 
-            for (Edge e : graph[end]) {
-                distances[e.end] = Math.min(distances[e.end], distances[end] + e.weight);
-                queue.offer(new Edge(e.end, distances[e.end]));
+            for (Edge e : graph[curr.end]) {
+                if (distances[e.end] > curr.weight + e.weight) {
+                    distances[e.end] = Math.min(distances[e.end], curr.weight + e.weight);
+                    queue.offer(new Edge(e.end, distances[e.end]));
+                }
             }
         }
-        return distances;
     }
 
     static void getAnswer(int[] target, int N) {
-        long first = dijkstra(1, 0, N)[target[0]];
-        if (first == Integer.MAX_VALUE) {
-            System.out.println("-1");
-            return;
-        }
-        long second = dijkstra(target[0], first, N)[target[1]];
-        if (second == Integer.MAX_VALUE) {
-            System.out.println("-1");
-            return;
-        }
-        long min = dijkstra(target[1], second, N)[N];
-        if (min == Integer.MAX_VALUE) {
-            System.out.println("-1");
-            return;
-        }
-        first = dijkstra(1, 0, N)[target[1]];
-        if (first == 800000) {
-            System.out.println("-1");
-            return;
-        }
-        second = dijkstra(target[1], first, N)[target[0]];
-        if (second == 800000) {
-            System.out.println("-1");
-            return;
-        }
-        long temp = dijkstra(target[0], second, N)[N];
-        if (temp == 800000) {
-            System.out.println("-1");
-            return;
-        }
-        min = Math.min(min, temp);
-        System.out.println(min);
+        dijkstra(target[0], N);
+        long target1To1 = distances[1];
+        long target1ToTarget2 = distances[target[1]];
+        long target1ToN = distances[N];
+
+        dijkstra(target[1], N);
+        long target2To1 = distances[1];
+        long target2ToN = distances[N];
+
+        long first = target1To1 + target1ToTarget2 + target2ToN;
+        long second = target2To1 + target1ToTarget2 + target1ToN;
+
+        long min = Math.min(first, second);
+
+        System.out.print(min >= Integer.MAX_VALUE ? "-1" : min);
     }
 
 }
