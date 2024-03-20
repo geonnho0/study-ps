@@ -6,8 +6,6 @@ import java.util.Queue;
 
 public class Main {
 
-    static long[] dp;
-
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] line = br.readLine().split(" ");
@@ -16,7 +14,6 @@ public class Main {
         int G = Integer.parseInt(line[2]);
         int U = Integer.parseInt(line[3]);
         int D = Integer.parseInt(line[4]);
-        dp = new long[2000001];
         int ans = bfs(S, G, U, D, F);
         if (ans == -1)
             System.out.println("use the stairs");
