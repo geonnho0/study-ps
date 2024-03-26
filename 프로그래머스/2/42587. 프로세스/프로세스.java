@@ -3,39 +3,26 @@ import java.util.*;
 class Solution {
     public int solution(int[] priorities, int location) {
         int answer = 0;
-        ArrayList<Process> process = new ArrayList<>();
-        for (int i = 0; i < priorities.length; i++) {
-            int priority = priorities[i];
-            process.add(new Process(priority, i));
-        }
-        while (!process.isEmpty()) {
-            Process curr = process.get(0);
-            process.remove(0);
-            boolean exist = false;
-            for (Process p: process) {
-                if (curr.p < p.p) {
-                    exist = true;
-                    break;
-                }
+        ArrayList<Integer> processes = new ArrayList<>();
+        for (int i = 0; i < priorities.length; i++)
+            processes.add(i);
+        while (true) {
+            int curr = processes.get(0);
+            boolean canExcute = true;
+            for (int i = 1; i < processes.size() && canExcute; i++) {
+                int next = processes.get(i);
+                if (priorities[curr] < priorities[next])
+                    canExcute = false;
             }
-            if (exist) {
-                process.add(curr);
+            processes.remove(0);
+            if (!canExcute) {
+                processes.add(curr);
                 continue;
             }
             answer++;
-            if (curr.i == location) {
+            if (location == curr) 
                 break;
-            }
         }
         return answer;
-    }
-}
-
-class Process {
-    int p, i;
-    
-    public Process(int p, int i) {
-        this.p = p;
-        this.i = i;
     }
 }
