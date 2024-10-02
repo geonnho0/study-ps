@@ -2,6 +2,13 @@ import java.util.*;
 
 class Solution {
     public String solution(int[] numbers) {
+        PriorityQueue<String> q = new PriorityQueue<>((s1, s2) -> s2.compareTo(s1));
+        q.offer("B");
+        q.offer("A");
+        q.offer("C");
+        while (!q.isEmpty()) {
+            System.out.println(q.poll());
+        }
         int length = numbers.length;
         String[] numberStrings = new String[length];
         for (int i = 0; i < length; i++)
