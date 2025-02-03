@@ -6,17 +6,16 @@ public class Main {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
     int L = Integer.parseInt(br.readLine());
     String str = br.readLine();
-    int ans = solution(L, str);
+    long ans = solution(L, str);
     System.out.println(ans);
   }
 
-  static int solution(int L, String str) {
+  static long solution(int L, String str) {
     char[] a = str.toCharArray();
-    int H = 0, r = 1, M = 1234567891;
-    for (int i = 0; i < a.length; i++) {
-      if (i > 0)
-        r = (r * 31) % M;
-      H += ((a[i] - 'a' + 1) * r) % M;
+    long H = 0L, r = 1L, M = 1234567891L;
+    for (int i = 0; i < L; i++) {
+      H = (H + (a[i] - 'a' + 1) * r) % M;
+      r = (r * 31) % M;
     }
     return H;
   }
