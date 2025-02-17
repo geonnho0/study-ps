@@ -2,18 +2,14 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] scoville, int K) {
-        PriorityQueue<Integer> queue = new PriorityQueue<>();
-        for (int item: scoville) queue.offer(item);
+        PriorityQueue<Integer> q = new PriorityQueue<>();
+        for (int s : scoville) q.offer(s);
         int answer = 0;
-        while (queue.size() >= 2 && queue.peek() < K) {
-            int first = queue.poll();
-            int second = queue.poll();
-            int mixed = first + second * 2;
-            queue.offer(mixed);
+        while (q.size() >= 2 && q.peek() < K) {
+            q.offer(q.poll() + 2 * q.poll());
             answer++;
         }
-        if (queue.peek() >= K)
-            return answer;
-        return -1;
+        if (q.peek() < K) return -1;
+        return answer;
     }
 }
