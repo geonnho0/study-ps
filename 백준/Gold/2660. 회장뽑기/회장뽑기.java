@@ -1,68 +1,61 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.*;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
-
-        int[][] distances = new int[N + 1][N + 1];
-        for (int i = 1; i <= N; i++) {
-            for (int j = 1; j <= N; j++) {
-                distances[i][j] = 55;
-            }
-            distances[i][i] = 0;
-        }
-        List<Integer>[] edges = new List[N + 1];
-        for (int i = 1; i <= N; i++) {
-            edges[i] = new ArrayList<>();
-        }
-
-        while (true) {
-            String[] line = br.readLine().split(" ");
-            if (line[0].equals("-1")) {
-                break;
-            }
-            int a = Integer.parseInt(line[0]);
-            int b = Integer.parseInt(line[1]);
-            distances[a][b] = 1;
-            distances[b][a] = 1;
-        }
-
-        for (int k = 1; k <= N; k++) {
-            for (int i = 1; i <= N; i++) {
-                for (int j = 1; j <= N; j++) {
-                    distances[i][j] = Math.min(distances[i][j], distances[i][k] + distances[k][j]);
-                }
-            }
-        }
-
-        int min = Integer.MAX_VALUE;
-        for (int i = 1; i <= N; i++) {
-            int sum = 0;
-            for (int j = 1; j <= N; j++) {
-                sum = Math.max(sum, distances[i][j]);
-            }
-            min = Math.min(min, sum);
-        }
-
-        ArrayList<Integer> ans = new ArrayList<>();
-        for (int i = 1; i <= N; i++) {
-            int sum = 0;
-            for (int j = 1; j <= N; j++) {
-                sum = Math.max(sum, distances[i][j]);
-            }
-            if (min == sum) {
-                ans.add(i);
-            }
-        }
-        System.out.println(min + " " + ans.size());
-        for (int a : ans) {
-            System.out.print(a + " ");
-        }
+  public static void main(String[] args) throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    int total = parseInt(br.readLine());
+    int[][] dist = new int[total + 1][total + 1];
+    for (int i = 1; i <= total; i++) {
+      for (int j = 1; j <= total; j++) {
+        dist[i][j] = 52;
+      }
+      dist[i][i] = 0;
     }
+    while (true) {
+      String[] line = br.readLine().split(" ");
+      int N = parseInt(line[0]);
+      int M = parseInt(line[1]);
+
+      if (N == -1 && M == -1) break;
+
+      dist[N][M] = 1;
+      dist[M][N] = 1;
+    }
+
+    for (int k = 1; k <= total; k++)
+      for (int i = 1; i <= total; i++)
+        for (int j = 1; j <= total; j++)
+          dist[i][j] = Math.min(dist[i][j], dist[i][k] + dist[k][j]);
+
+    int[] score = new int[total + 1];
+    for (int i = 1; i <= total; i++)
+      for (int j = 1; j <= total; j++)
+        score[i] = Math.max(score[i], dist[i][j]);
+
+    int min = findMin(score);
+    List<Integer> people = new ArrayList<>();
+    for (int i = 1; i <= total; i++) {
+      if (min == score[i]) {
+        people.add(i);
+      }
+    }
+
+    System.out.printf("%d %d\n", min, people.size());
+    for (int p : people)
+      System.out.printf("%d ", p);
+  }
+
+  static int findMin(int[] score) {
+    int min = Integer.MAX_VALUE;
+    for (int i = 1; i != score.length; i++)
+      min = Math.min(min, score[i]);
+    return min;
+  }
+
+  static int parseInt(String s) {
+    return Integer.parseInt(s);
+  }
 
 }
