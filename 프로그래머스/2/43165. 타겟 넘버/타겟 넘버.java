@@ -1,21 +1,38 @@
 class Solution {
-    private int target;
-    private int answer;
+    int answer = 0;
     
     public int solution(int[] numbers, int target) {
-        answer = 0;
-        this.target = target;
-        dfs(numbers, 0, 0);
+        dfs(numbers[0], 0, numbers, target);
+        dfs(0 - numbers[0], 0, numbers, target);
         return answer;
     }
     
-    private void dfs(int[] numbers, int sum, int index) {
-        if (index == numbers.length) {
-            if (sum == target) answer++;
-            return;
+    void dfs(int value, int currIndex, int[] numbers, int target) {
+        if (currIndex == numbers.length - 1) {
+            if (value == target)
+                answer++;
         }
+        int nextIndex = currIndex + 1;
+        if (!validate(value, nextIndex, numbers, target))
+            return;
         
-        dfs(numbers, sum + numbers[index], index + 1);
-        dfs(numbers, sum - numbers[index], index + 1);
+        dfs(value + numbers[nextIndex], nextIndex, numbers, target);
+        dfs(value - numbers[nextIndex], nextIndex, numbers, target);
+    }
+    
+    
+    boolean validate(int value, int nextIndex, int[] numbers, int target) {
+        if (nextIndex >= numbers.length)
+            return false;
+        
+        int sum = 0;
+        for (; nextIndex < numbers.length; nextIndex++)
+            sum += numbers[nextIndex];
+        
+        if (value + sum < target)
+            return false;
+        if (value - sum > target)
+            return false;
+        return true;
     }
 }
