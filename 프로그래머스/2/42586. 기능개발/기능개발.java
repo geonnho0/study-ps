@@ -2,18 +2,31 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-        int n = progresses.length;
-        List<Integer> count = new ArrayList<>();
+        int n = speeds.length;
+        List<Integer> answer = new ArrayList<>();
         for (int i = 0; i < n; i++) {
-            int days = (int) Math.ceil((double) (100 - progresses[i]) / speeds[i]);
-            int j = i + 1;
-            for (; j < n; j++) {
-                if (progresses[j] + speeds[j] * days < 100)
+            int curr = progresses[i];
+            int daysToComplete = calculateComplete(curr, speeds[i]);
+            
+            int count = 1;
+            for (int j = i + 1; j < n; j++) {
+                int next = progresses[j];
+                int daysToComplete1 = calculateComplete(next, speeds[j]);
+                
+                if (daysToComplete < daysToComplete1) {
                     break;
+                }
+                
+                count++;
             }
-            count.add(j - i);
-            i = j - 1;
+            
+            i += (count - 1);
+            answer.add(count);
         }
-        return count.stream().mapToInt(Integer::intValue).toArray();
+        return answer.stream().mapToInt(Integer::intValue).toArray();
+    }
+    
+    int calculateComplete(int progess, int speed) {
+        return (int) Math.ceil((100 - progess) / (double) speed);
     }
 }
