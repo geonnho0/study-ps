@@ -1,46 +1,40 @@
 import java.util.*;
 
 class Solution {
-    int[] parent;
-    List<int[]> edges = new ArrayList<>();
+    int[] parents;
     
     public int solution(int n, int[][] costs) {
-        init(n, costs);
-        int count = 0, answer = 0;
-        while (count != n - 1) {
-            for (int[] edge : edges) {
-                if (find(edge[0]) == find(edge[1]))
-                    continue;
-                union(edge[0], edge[1]);
-                answer += edge[2];
-                count++;
+        init(n);
+        Arrays.sort(costs, (e1, e2) -> e1[2] - e2[2]);
+        int answer = 0;
+        int count = 0;
+        for (int[] cost : costs) {
+            if (count == n - 1)
                 break;
-            }
+            if (find(cost[0]) == find(cost[1]))
+                continue;
+            merge(cost[0], cost[1]);
+            answer += cost[2];
+            count += 1;
         }
         return answer;
     }
     
-    void init(int n, int[][] costs) {
-        parent = new int[n];
+    void init(int n) {
+        parents = new int[n];
         for (int i = 0; i < n; i++)
-            parent[i] = i;
-        for (int[] cost : costs) {
-            int start = cost[0], end = cost[1], weight = cost[2];
-            edges.add(new int[]{start, end, weight});
-        }
-        Collections.sort(edges, (e1, e2) -> e1[2] - e2[2]);
+            parents[i] = i;
     }
     
     int find(int a) {
-        if (a == parent[a])
+        if (parents[a] == a)
             return a;
-        return parent[a] = find(parent[a]);
+        return parents[a] = find(parents[a]);
     }
     
-    void union(int a, int b) {
-        int aRoot = find(a);
-        int bRoot = find(b);
-        if (aRoot != bRoot)
-            parent[bRoot] = parent[aRoot];
+    void merge(int a, int b) {
+        int rootA = find(a);
+        int rootB = find(b);
+        parents[rootB] = rootA;
     }
 }
