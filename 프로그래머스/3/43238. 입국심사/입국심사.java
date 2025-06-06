@@ -2,21 +2,26 @@ import java.util.*;
 
 class Solution {
     public long solution(int n, int[] times) {
-        long answer = 0;
         Arrays.sort(times);
-        long left = 0, right = times[times.length - 1] * (long) n;
+        long left = 0, right = (long) n * times[times.length - 1];
+        long answer = right;
+
         while (left <= right) {
             long mid = (left + right) / 2;
-            long count = 0;
-            for (int time: times)
-                count += mid / time;
-            if (count < n)
+            
+            long peopleCount = 0;
+            for (int time : times) {
+                peopleCount += (mid / time);
+            }
+            
+            if (peopleCount < n) {
                 left = mid + 1;
-            else {
-                right = mid - 1;
+            } else {
                 answer = mid;
+                right = mid - 1;
             }
         }
+        
         return answer;
     }
 }
