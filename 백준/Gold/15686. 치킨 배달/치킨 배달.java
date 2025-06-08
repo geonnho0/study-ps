@@ -1,100 +1,70 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
-
-    static int[][] graph;
-    static int[][] chicken;
-    static boolean[] selected;
-    static int N, M, chickenCount = 0, ans = Integer.MAX_VALUE;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] line = br.readLine().split(" ");
-        N = Integer.parseInt(line[0]);
-        M = Integer.parseInt(line[1]);
-        graph = new int[N][N];
-        chicken = new int[15][2];
-        for (int i = 0; i < 15; i++) {
-            chicken[i] = new int[]{-1, -1};
-        }
-        selected = new boolean[15];
+        int N = Integer.parseInt(line[0]);
+        int M = Integer.parseInt(line[1]);
+        int[][] cities = new int[N][N];
         for (int i = 0; i < N; i++) {
             line = br.readLine().split(" ");
-            for (int j = 0; j < N; j++) {
-                graph[i][j] = Integer.parseInt(line[j]);
-                if (graph[i][j] == 2) {
-                    chicken[chickenCount++] = new int[]{i, j};
-                }
-            }
+            for (int j = 0; j < N; j++)
+                cities[i][j] = Integer.parseInt(line[j]);
         }
-
-        dfs(0, 0);
-        System.out.print(ans);
+        System.out.println(solution(N, M, cities));
     }
 
-    static void dfs(int index, int depth) {
-        if (depth == M) {
-            ans = Math.min(ans, getAns());
-            return;
-        }
 
-        for (int i = index; i < chickenCount; i++) {
-            if (selected[i]) {
-                continue;
+    private static int answer = Integer.MAX_VALUE;
+    private static List<int[]> houses;
+    private static List<int[]> allChickenShops;
+
+    private static int solution(int N, int M, int[][] cities) {
+        houses = new ArrayList<>();
+        allChickenShops = new ArrayList<>();
+        for (int i = 0; i < N; i++)
+            for (int j = 0; j < N; j++) {
+                if (cities[i][j] == 1)
+                    houses.add(new int[]{i, j});
+                else if (cities[i][j] == 2)
+                    allChickenShops.add(new int[]{i, j});
             }
-            if (chicken[i][0] == -1) {
-                return;
-            }
-            selected[i] = true;
-            dfs(i + 1, depth + 1);
-            selected[i] = false;
+
+        findChickenShops(-1, new ArrayList<>(), M);
+
+        return answer;
+    }
+
+    private static void findChickenShops(int selectIndex, List<int[]> selectedChickenShops, int M) {
+        if (selectedChickenShops.size() > M) return;
+        answer = Math.min(answer, calculateChickenLength(selectedChickenShops));
+
+        for (int i = selectIndex + 1; i < allChickenShops.size(); i++) {
+            selectedChickenShops.add(allChickenShops.get(i));
+            findChickenShops(i, selectedChickenShops, M);
+            selectedChickenShops.remove(selectedChickenShops.size() - 1);
         }
     }
 
-    static int getAns() {
-        int[][] temp = new int[N][N];
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                temp[i][j] = graph[i][j];
-            }
-        }
+    private static int calculateChickenLength(List<int[]> chickenShops) {
+        if (chickenShops.isEmpty()) return Integer.MAX_VALUE;
 
-        for (int i = 0; i < chickenCount; i++) {
-            if (selected[i] || chicken[i][0] == -1) {
-                continue;
+        int totalDistance = 0;
+        for (int[] house : houses) {
+            int minDistance = Integer.MAX_VALUE;
+            for (int[] shop : chickenShops) {
+                minDistance = Math.min(minDistance, distance(house, shop));
             }
-            graph[chicken[i][0]][chicken[i][1]] = 0;
+            totalDistance += minDistance;
         }
-
-        int ans = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                if (graph[i][j] == 1) {
-                    ans += findShortestChicken(i, j);
-                }
-            }
-        }
-
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                graph[i][j] = temp[i][j];
-            }
-        }
-
-        return ans;
+        return totalDistance;
     }
 
-    static int findShortestChicken(int x, int y) {
-        int ans = Integer.MAX_VALUE;
-        for (int i = 0; i < chickenCount; i++) {
-            if (!selected[i]) {
-                continue;
-            }
-            ans = Math.min(ans, Math.abs(x - chicken[i][0]) + Math.abs(y - chicken[i][1]));
-        }
-        return  ans;
+    private static int distance(int[] a, int[] b) {
+        return  Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
     }
-
 }
