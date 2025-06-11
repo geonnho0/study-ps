@@ -1,52 +1,49 @@
 import java.util.*;
 
 class Solution {
-    
-    int n, dest;
-    int[] answer;
-    List<Integer>[] graph;
-    
+    List<Integer>[] edges;
     public int[] solution(int n, int[][] roads, int[] sources, int destination) {
-        init(n, roads, sources, destination);
-        for (int i = 0; i < sources.length; i++)
-            answer[i] = bfs(sources[i]);
+        edges = new ArrayList[n + 1];
+        for (int i = 0; i <= n; i++)
+            edges[i] = new ArrayList<>();
+        
+        for (int[] r : roads) {
+            edges[r[0]].add(r[1]);
+            edges[r[1]].add(r[0]);
+        }
+        
+        int[] answer = new int[sources.length];
+        for (int i = 0; i < sources.length; i++) {
+            if (sources[i] == destination) {
+                answer[i] = 0;
+                continue;
+            }
+            answer[i] = findShortest(sources[i], destination, n);
+        }
+        
         return answer;
     }
     
-    void init(int n, int[][] roads, int[] sources, int dest) {
-        this.n = n;
-        this.dest = dest;
-        answer = new int[sources.length];
-        graph = new ArrayList[n + 1];
-        for (int i = 1; i <= n; i++)
-            graph[i] = new ArrayList<>();
-        for (int[] road : roads) {
-            graph[road[0]].add(road[1]);
-            graph[road[1]].add(road[0]);
-        }
-    }
-    
-    int bfs(int start) {
-        if (start == dest)
-            return 0;
-        Queue<Integer> queue = new LinkedList<>();
-        queue.offer(start);
+    int findShortest(int start, int dest, int n) {
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(start);
         int[] dist = new int[n + 1];
         dist[start] = 1;
         
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
+        while (!q.isEmpty()) {
+            int curr = q.poll();
             
-            for (int next : graph[curr]) {
+            
+            for (int next : edges[curr]) {
                 if (dist[next] != 0)
                     continue;
-                dist[next] = dist[curr] + 1;
                 if (next == dest)
-                    return dist[next] - 1;
-                queue.offer(next);
+                    return dist[curr];
+                
+                dist[next] = dist[curr] + 1;
+                q.offer(next);
             }
         }
-        
         return -1;
     }
 }
