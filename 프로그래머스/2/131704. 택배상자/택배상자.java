@@ -2,27 +2,22 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] order) {
+        Stack<Integer> subBelt = new Stack<>();
         int answer = 0;
-        int container = 1;
-        Stack<Integer> subContainer = new Stack<>();
+        int curr = 1;
         for (int o : order) {
-            if (container == o) {
-                container++;
+            if (curr <= o) {
+                while (curr != o)
+                    subBelt.push(curr++);
+                curr++;
                 answer++;
                 continue;
             }
-            if (container > o) {
-                if (subContainer.isEmpty() || subContainer.peek() != o) {
-                    break;
-                }
-                subContainer.pop();
-                answer++;
-                continue;
-            }
-            while (container < o) {
-                subContainer.push(container++);
-            }
-            container++;
+            
+            if (subBelt.isEmpty() || subBelt.peek() != o)
+                return answer;
+            
+            subBelt.pop();
             answer++;
         }
         return answer;
