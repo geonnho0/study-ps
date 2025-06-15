@@ -1,26 +1,28 @@
 class Solution {
-    boolean flag = false;
-    int answer = 0;
-    String word;
-    char[] alphabet = {'A', 'E', 'I', 'O', 'U'};
+    char[] alphabet = new char[]{'A', 'E', 'I', 'O', 'U'};
+    String target;
+    int answer;
     public int solution(String word) {
-        this.word = word;
-        dfs("");
-        return answer - 1;
+        target = word;
+        
+        find("", 0);
+        return answer;
     }
     
-    void dfs(String str) {
-        answer++;
-        if (str.equals(word)) {
-            flag = true;
-            return;
+    int find(String curr, int order) {
+        if (curr.equals(target)) {
+            answer = order;
+            return order;
         }
-            
-        if (str.length() == 5)
-            return;
         
-        for (int i = 0; i < 5 && !flag; i++) {
-            dfs(str + alphabet[i]);
+        if (curr.length() == 5) {
+            return order;
         }
+        
+        int next = order + 1;
+        for (int i = 0; i < 5; i++)
+            next = find(curr + alphabet[i], next) + 1;
+        
+        return next - 1;
     }
 }
