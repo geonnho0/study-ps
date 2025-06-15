@@ -2,28 +2,32 @@ import java.util.*;
 
 class Solution {
     public int[] solution(String[] operations) {
-        PriorityQueue<Integer> min = new PriorityQueue<>(), max = new PriorityQueue<>(Collections.reverseOrder());
-        int len = 0;
-        for (String operation : operations) {
-            String[] op = operation.split(" ");
-            if (len == 0) {
-                min = new PriorityQueue<>();
-                max = new PriorityQueue<>(Collections.reverseOrder());
+        PriorityQueue<Integer> min = null, max = null;
+        int size = 0;
+        for (String command : operations) {
+            char op = command.charAt(0);
+            
+            if (size == 0) {
+                min = new PriorityQueue<Integer>();
+                max = new PriorityQueue<Integer>(Collections.reverseOrder());
             }
-            if (op[0].equals("I")) {
-                min.offer(Integer.parseInt(op[1]));
-                max.offer(Integer.parseInt(op[1]));
-                len++;
+            
+            int arg = Integer.valueOf(command.split(" ")[1]);
+            if (op == 'I') {
+                size++;
+                min.offer(arg);
+                max.offer(arg);
             }
-            else if (len > 0) {
-                len--;
-                if (op[1].equals("1"))
-                    max.poll();
+            else if (size > 0) {
+                size--;
+                if (arg == -1)
+                    max.remove(min.poll());
                 else
-                    min.poll();
+                    min.remove(max.poll());
             }
         }
-        if (len <= 0)
+        
+        if (size <= 0)
             return new int[]{0, 0};
         return new int[]{max.poll(), min.poll()};
     }
