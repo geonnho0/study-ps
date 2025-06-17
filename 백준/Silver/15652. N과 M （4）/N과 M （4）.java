@@ -1,50 +1,41 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static int N, M;
-    static ArrayList<Integer> list = new ArrayList<>();
-    static StringBuilder sb = new StringBuilder();
+    private static int n, m;
+
+    private static String solution(int N, int M) {
+        StringBuilder sb = new StringBuilder();
+        n = N;
+        m = M;
+        for (int i = 1; i <= n; i++)
+            find(i, new ArrayList<>(Collections.singleton(String.valueOf(i))), sb);
+        return sb.toString();
+    }
+
+    private static void find(int curr, ArrayList<String> str, StringBuilder sb) {
+        if (str.size() == m) {
+            StringBuilder temp = new StringBuilder();
+            for (String s : str)
+                temp.append(s).append(" ");
+            sb.append(temp).append("\n");
+            return;
+        }
+
+        for (int next = curr; next <= n; next++) {
+            str.add(String.valueOf(next));
+            find(next, str, sb);
+            str.remove(str.size() - 1);
+        }
+    }
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String[] line = br.readLine().split(" ");
-        N = Integer.parseInt(line[0]);
-        M = Integer.parseInt(line[1]);
-        dfs(0);
-        System.out.print(sb);
+        int n = Integer.parseInt(line[0]);
+        int m = Integer.parseInt(line[1]);
+
+        System.out.println(solution(n, m));
     }
-
-    static void dfs(int depth) {
-        if (depth == M) {
-            for (int l : list) {
-                sb.append(l).append(" ");
-            }
-            sb.append("\n");
-            return;
-        }
-
-        for (int i = 1; i <= N; i++) {
-            list.add(i);
-            if (isSorted()) {
-                dfs(depth + 1);
-            }
-            list.remove(list.size() - 1);
-        }
-    }
-
-    static boolean isSorted() {
-        int num = list.get(0);
-        for (int i = 1; i < list.size(); i++) {
-            if (num > list.get(i)) {
-                return false;
-            }
-            num = list.get(i);
-        }
-        return true;
-    }
-
 }
