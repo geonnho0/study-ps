@@ -1,85 +1,78 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.*;
+import java.io.*;
 
 public class Main {
 
-    static String[][] graph;
-    static int N;
+  static int[] dx = {1, -1, 0, 0}, dy = {0, 0, 1, -1};
+
+    public static int solution(int n, char[][] candies) {
+        int ret = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                ret = Math.max(ret, swapAndCount(candies, i, j));
+                if (ret == n) return ret;
+            }
+        }
+        return ret;
+    }
+
+    private static int swapAndCount(char[][] candies, int x1, int y1) {
+        int max = 0;
+        for (int i = 0; i < 4; i++) {
+            int x2 = x1 + dx[i], y2 = y1 + dy[i];
+            if (x2 < 0 || x2 >= candies.length || y2 < 0 || y2 >= candies.length) continue;
+            swap(candies, x1, y1, x2, y2);
+            max = Math.max(max, findMax(candies, x1, y1));
+            max = Math.max(max, findMax(candies, x2, y2));
+            swap(candies, x1, y1, x2, y2);
+        }
+        return max;
+    }
+
+    private static void swap(char[][] candies, int x1, int y1, int x2, int y2) {
+        char temp = candies[x1][y1];
+        candies[x1][y1] = candies[x2][y2];
+        candies[x2][y2] = temp;
+    }
+
+    private static int findMax(char[][] candies, int x, int y) {
+        int count1 = 1;
+        char color = candies[x][y];
+        int h = x + 1;
+        while (h < candies.length && candies[h][y] == color) {
+            count1++;
+            h++;
+        }
+        h = x - 1;
+        while (h >= 0 && candies[h][y] == color) {
+            count1++;
+            h--;
+        }
+
+        int count2 = 1;
+        int v = y + 1;
+        while (v < candies.length && candies[x][v] == color) {
+            count2++;
+            v++;
+        }
+        v = y - 1;
+        while (v >= 0 && candies[x][v] == color) {
+            count2++;
+            v--;
+        }
+        return Math.max(count1, count2);
+    }
+
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        graph = new String[N][N];
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            String[] line = st.nextToken().split("");
-            for (int j = 0; j < N; j++) {
-                graph[i][j] = line[j];
-            }
-        }
 
-        int[] dx = {-1, 1, 0, 0}, dy = {0, 0, -1, 1};
-        int max = 0;
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < N; j++) {
-                for (int k = 0; k < 4; k++) {
-                    int nextX = i + dx[k], nextY = j + dy[k];
-                    if (nextX < 0 || nextX >= N || nextY < 0 || nextY >= N) continue;
-                    max = Math.max(max, changeAndCheck(i, j, nextX, nextY));
-                    if (max == N) {
-                        System.out.println(max);
-                        return;
-                    }
-                }
-            }
+        int n = Integer.parseInt(br.readLine());
+        char[][] candies = new char[n][n];
+        for (int i = 0; i < n; i++) {
+            char[] arr = br.readLine().toCharArray();
+            for (int j = 0; j < n; j++)
+                candies[i][j] = arr[j];
         }
-        System.out.println(max);
+        System.out.println(solution(n, candies));
     }
-
-    static int changeAndCheck(int x1, int y1, int x2, int y2) {
-        String temp = graph[x1][y1];
-        graph[x1][y1] = graph[x2][y2];
-        graph[x2][y2] = temp;
-        int res = check(x1, y1, true);
-        res = Math.max(res, check(x1, y1, false));
-        res = Math.max(res, check(x2, y2, true));
-        res = Math.max(res, check(x2, y2, false));
-        graph[x2][y2] = graph[x1][y1];
-        graph[x1][y1] = temp;
-        return res;
-    }
-
-    static int check(int x, int y, boolean isX) {
-        String curr = graph[x][y];
-        int ans = 0;
-        if (isX) {
-            int index = x - 1;
-            while (index >= 0 && graph[index][y].equals(curr)) {
-                index--;
-                ans++;
-            }
-            index = x + 1;
-            while (index < N && graph[index][y].equals(curr)) {
-                index++;
-                ans++;
-            }
-        }
-        else {
-            int index = y - 1;
-            while (index >= 0 && graph[x][index].equals(curr)) {
-                index--;
-                ans++;
-            }
-            index = y + 1;
-            while (index < N && graph[x][index].equals(curr)) {
-                index++;
-                ans++;
-            }
-        }
-        return ans + 1;
-    }
-
 }
