@@ -1,66 +1,63 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static ArrayList<Integer>[] graph;
-    static int[] more, less;
-    static int N;
+    static List<Integer>[] edges;
+    static int[] greatCount, lessCount;
+
+    public static int solution(int n, int[][] marbles) {
+        greatCount = new int[n + 1];
+        lessCount = new int[n + 1];
+        edges = new ArrayList[n + 1];
+        for (int i = 0; i <= n; i++)
+            edges[i] = new ArrayList<>();
+
+        for (int[] m : marbles)
+            edges[m[0]].add(m[1]);
+
+        for (int i = 1; i <= n; i++)
+            count(i);
+
+        int ret = 0, halfCount = (n - 1) / 2;
+        for (int i = 1; i <= n; i++) {
+            if (greatCount[i] > halfCount || lessCount[i] > halfCount)
+                ret++;
+        }
+        return ret;
+    }
+
+    private static void count(int marble) {
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] v = new boolean[edges.length];
+        q.offer(marble);
+        v[marble] = true;
+
+        while (!q.isEmpty()) {
+            int curr = q.poll();
+
+            for (int next : edges[curr]) {
+                if (v[next]) continue;
+
+                v[next] = true;
+                lessCount[marble]++;
+                greatCount[next]++;
+                q.offer(next);
+            }
+        }
+    }
+
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String[] line = br.readLine().split(" ");
-        N = Integer.parseInt(line[0]);
-        int M = Integer.parseInt(line[1]);
-        graph = new ArrayList[N + 1];
-        more = new int[N + 1];
-        less = new int[N + 1];
-        for (int i = 0; i <= N; i++) {
-            graph[i] = new ArrayList<>();
+        String[] arr = br.readLine().split(" ");
+        int n = Integer.parseInt(arr[0]), m = Integer.parseInt(arr[1]);
+        int[][] marbles = new int[m][2];
+        for (int i = 0; i < m; i++) {
+            arr = br.readLine().split(" ");
+            marbles[i][0] = Integer.parseInt(arr[0]);
+            marbles[i][1] = Integer.parseInt(arr[1]);
         }
-        for (int i = 0; i < M; i++) {
-            line = br.readLine().split(" ");
-            int a = Integer.parseInt(line[0]);
-            int b = Integer.parseInt(line[1]);
-            graph[b].add(a);
-        }
-
-        for (int i = 1; i <= N; i++) {
-            bfs(i);
-        }
-
-        int ans = 0;
-        for (int i = 1; i <= N; i++) {
-            if (more[i] > (N - 1) / 2 || less[i] > (N - 1) / 2) {
-                ans++;
-            }
-        }
-        System.out.println(ans);
+        System.out.println(solution(n, marbles));
     }
-
-    static void bfs(int start) {
-        Queue<Integer> queue = new LinkedList<>();
-        boolean[] visited = new boolean[N + 1];
-        queue.offer(start);
-        visited[start] = true;
-
-        while (!queue.isEmpty()) {
-            int curr = queue.poll();
-
-            for (int next: graph[curr]) {
-                if (visited[next]) {
-                    continue;
-                }
-                more[start]++;
-                visited[next] = true;
-                less[next]++;
-                queue.offer(next);
-            }
-        }
-    }
-
 }
