@@ -2,56 +2,36 @@ import java.util.*;
 
 class Solution {
     public int solution(String[][] book_time) {
+        Arrays.sort(book_time, (bt1, bt2) -> {
+            if (bt1[0].equals(bt2[0])) {
+                return bt1[1].compareTo(bt2[1]);
+            }
+            return bt1[0].compareTo(bt2[0]);
+        });
+        
+        PriorityQueue<String> pq = new PriorityQueue<>();
+        
         int answer = 0;
-        Arrays.sort(book_time, (o1, o2) -> o1[0].compareTo(o2[0]));
-        List<Time> rooms = new ArrayList<>();
-        for (String[] bTime : book_time) {
-            int[] times = getTimes(bTime);
-            
-            int number = 0;
-            boolean available = false;
-            for (number = 0; number < rooms.size(); number++) {
-                Time room = rooms.get(number);
-                if (room.available(times[0])) {
-                    available = true;
-                    break;
-                }
-            }
-            
-            if (available) {
-                rooms.remove(number);
-                rooms.add(number, new Time(times));
-            }
+        for (String[] b : book_time) {
+            if (pq.isEmpty()) pq.offer(b[1]);
             else {
-                rooms.add(new Time(times));
-                answer++;
+                if (isOver10min(pq.peek(), b[0]))
+                    pq.poll();
+                    
+                pq.offer(b[1]);
             }
+            answer = Math.max(answer, pq.size());
         }
+        
+        
         return answer;
     }
     
-    int[] getTimes(String[] time) {
-        String start = time[0];
-        int h = Integer.parseInt(start.split(":")[0]);
-        int m = Integer.parseInt(start.split(":")[1]);
-        int startTime = h * 60 + m;
-        String end = time[1];
-        h = Integer.parseInt(end.split(":")[0]);
-        m = Integer.parseInt(end.split(":")[1]);
-        int endTime = h * 60 + m;
-        return new int[]{startTime, endTime};
-    }
-}
-
-class Time {
-    int start, end;
-    
-    public Time(int[] times) {
-        this.start = times[0];
-        this.end = times[1];
-    }
-    
-    boolean available(int currTime) {
-        return end + 10 <= currTime;
+    boolean isOver10min(String t1, String t2) {
+        String[] temp = t1.split(":");
+        int time1 = Integer.parseInt(temp[0]) * 60 + Integer.parseInt(temp[1]);
+        temp = t2.split(":");
+        int time2 = Integer.parseInt(temp[0]) * 60 + Integer.parseInt(temp[1]);
+        return time2 - time1 >= 10;
     }
 }
