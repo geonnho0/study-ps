@@ -2,34 +2,25 @@ import java.util.*;
 
 class Solution {
     public int solution(int bridge_length, int weight, int[] truck_weights) {
+        Queue<int[]> q = new LinkedList<>();
+        int currentWeight = truck_weights[0];
+        q.offer(new int[]{currentWeight, 0});
+        int truckIdx = 1;
+        int truckCount = truck_weights.length;
         int answer = 1;
-        Queue<Truck> queue = new LinkedList<>();
-        queue.offer(new Truck(answer, truck_weights[0]));
-        int currWeight = truck_weights[0], index = 1;
-        while (!queue.isEmpty()) {
-            answer++;
-            while (!queue.isEmpty() && answer - queue.peek().startTime == bridge_length) {
-                Truck out = queue.poll();
-                currWeight -= out.weight;
+        while (!q.isEmpty()) {
+            while (!q.isEmpty() && (answer - q.peek()[1]) >= bridge_length) {
+                int[] t = q.poll();
+                currentWeight -= t[0];
             }
             
-            if (index < truck_weights.length) {
-                if (currWeight + truck_weights[index] <= weight) {
-                    queue.offer(new Truck(answer, truck_weights[index]));
-                    currWeight += truck_weights[index];
-                    index++;
-                }
+            if (truckIdx < truckCount && currentWeight + truck_weights[truckIdx] <= weight) {
+                q.offer(new int[]{truck_weights[truckIdx], answer});
+                currentWeight += truck_weights[truckIdx++];
             }
+            
+            answer++;
         }
         return answer;
-    }
-}
-
-class Truck {
-    int startTime, weight;
-    
-    public Truck(int startTime, int weight) {
-        this.startTime = startTime;
-        this.weight = weight;
     }
 }
